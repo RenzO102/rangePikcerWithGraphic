@@ -11,16 +11,24 @@ interface Props {
 }
 
 export const TableDatePicker: FC<Props> = props => {
-  const pickLastMonth = () => {
-    props.pickEndDate(new Date());
-    const monthAgo = new Date();
-    monthAgo.setDate(monthAgo.getDate() - 30);
-    props.pickStartDate(monthAgo);
+  const changeStartDate = (isAdd: boolean) => {
+    const newDate = new Date(props.startDate);
+    newDate.setDate(newDate.getDate() + (isAdd ? 30 : -30));
+    if (newDate > props.endDate) return;
+    props.pickStartDate(newDate);
+  };
+
+  const changeEndDate = (isAdd: boolean) => {
+    const newDate = new Date(props.endDate);
+    newDate.setDate(newDate.getDate() + (isAdd ? 30 : -30));
+    if (newDate < props.startDate) return;
+    props.pickEndDate(newDate);
   };
 
   return (
-    <>
-      <div style={{ marginBottom: 20 }}>
+    <div style={{ display: 'inline-grid' }}>
+      <div style={{ marginBottom: 20, display: 'inline-flex' }}>
+        <button onClick={() => changeStartDate(false)}> {'<'} </button>
         <DatePicker
           selected={props.startDate}
           selectsStart
@@ -28,10 +36,12 @@ export const TableDatePicker: FC<Props> = props => {
           endDate={props.endDate}
           onSelect={props.pickStartDate}
           dateFormat={'dd.MM.yy'}
-          style={{ marginBottom: 20 }}
         />
+        <button onClick={() => changeStartDate(true)}> {'>'} </button>
       </div>
-      <div style={{ marginBottom: 20 }}>
+
+      <div style={{ marginBottom: 20, display: 'inline-flex' }}>
+        <button onClick={() => changeEndDate(false)}> {'<'} </button>
         <DatePicker
           selected={props.endDate}
           selectsEnd
@@ -41,9 +51,9 @@ export const TableDatePicker: FC<Props> = props => {
           onSelect={props.pickEndDate}
           dateFormat={'dd.MM.yy'}
         />
+        <button onClick={() => changeEndDate(true)}> {'>'} </button>
       </div>
-      <button onClick={pickLastMonth}>Выбрать последний месяц</button>
-    </>
+    </div>
   );
 };
 
